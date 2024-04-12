@@ -1,0 +1,11 @@
+version: '3'
+services:
+  opcuaref:
+    image: ghcr.io/opcfoundation/uanetstandard/refserver:latest
+    container_name: opcuaref
+    hostname: opcuaref
+    command: ["-c", "-s", "-a"]
+    ports:
+      - "62541:62541"
+    volumes:
+      - ./OPC Foundation/:/root/.local/share/OPC Foundation

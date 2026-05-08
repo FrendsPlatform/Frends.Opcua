@@ -17,6 +17,6 @@ jobs:
       workdir: Frends.Opcua.Read
       dotnet_version: 8.0.x
       strict_analyzers: true
-      prebuild_command: cd Frends.Opcua.Read.Tests && ./generate-certs.sh && docker-compose up -d
+      prebuild_command: cd Frends.Opcua.Read.Tests && chmod 777 ./generate-certs.sh && ./generate-certs.sh && docker-compose up -d
     secrets:
       badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}

@@ -1,15 +1,15 @@
-﻿using Frends.Opcua.Read.Definitions;
-using Frends.Opcua.Read.Enums;
-using Opc.Ua;
-using Opc.Ua.Client;
-using Opc.Ua.Security.Certificates;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Frends.Opcua.Read.Definitions;
+using Frends.Opcua.Read.Enums;
+using Opc.Ua;
+using Opc.Ua.Client;
+using Opc.Ua.Security.Certificates;
 
 namespace Frends.Opcua.Read.Factories;
 

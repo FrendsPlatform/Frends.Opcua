@@ -1,10 +1,9 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Frends.Opcua.Read.Definitions;
 using Frends.Opcua.Read.Enums;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Frends.Opcua.Read.Tests;
 

@@ -100,7 +100,7 @@ public static class Opcua
         if (connection.SecurityMode != OpcMessageSecurityMode.None &&
             !string.IsNullOrWhiteSpace(connection.ApplicationCertificatePath) &&
             !File.Exists(connection.ApplicationCertificatePath))
-                    throw new FileNotFoundException("Application certificate file not found.", connection.ApplicationCertificatePath);
+            throw new FileNotFoundException("Application certificate file not found.", connection.ApplicationCertificatePath);
     }
 
     private static JArray ReadNodes(Session session, List<string> nodeIds)

@@ -79,22 +79,21 @@ public static class Opcua
 
     private static void ValidateInput(Input input, Connection connection)
     {
-        if (input == null)
-            throw new ArgumentNullException(nameof(input));
+        ArgumentNullException.ThrowIfNull(input);
         if (string.IsNullOrWhiteSpace(connection.ServerName))
-            throw new ArgumentException("ServerName must not be empty.", nameof(connection.ServerName));
-        if (input.Mode == OpcOperationMode.Read && (input.NodeIds == null || input.NodeIds.Count() == 0))
-            throw new ArgumentException("NodeIds list must contain at least one NodeId.", nameof(input.NodeIds));
+            throw new ArgumentException("ServerName must not be empty.", nameof(connection));
+        if (input.Mode == OpcOperationMode.Read && (input.NodeIds == null || input.NodeIds.Length == 0))
+            throw new ArgumentException("NodeIds list must contain at least one NodeId.", nameof(input));
         if (input.Mode == OpcOperationMode.Browse && string.IsNullOrWhiteSpace(input.StartNodeId))
-            throw new ArgumentException("StartNodeId must be provided.", nameof(input.StartNodeId));
+            throw new ArgumentException("StartNodeId must be provided.", nameof(input));
         if (connection.Authentication == AuthenticationMode.Certificate)
         {
             if (string.IsNullOrWhiteSpace(connection.CertificatePath))
-                throw new ArgumentException("CertificatePath is required for Certificate authentication.", nameof(connection.CertificatePath));
+                throw new ArgumentException("CertificatePath is required for Certificate authentication.", nameof(connection));
             if (!File.Exists(connection.CertificatePath))
                 throw new FileNotFoundException("Certificate file not found.", connection.CertificatePath);
             if (connection.SecurityMode != OpcMessageSecurityMode.SignAndEncrypt)
-                throw new ArgumentException("Certificate authentication requires SecurityMode SignAndEncrypt.");
+                throw new ArgumentException("Certificate authentication requires SecurityMode SignAndEncrypt.", nameof(connection));
         }
 
         if (connection.SecurityMode != OpcMessageSecurityMode.None &&

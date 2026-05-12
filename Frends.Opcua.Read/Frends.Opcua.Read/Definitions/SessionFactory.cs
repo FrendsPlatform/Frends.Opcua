@@ -49,7 +49,7 @@ internal static class SessionFactory
             GetSecurityPolicy(connection.SecurityPolicy),
             cancellationToken).ConfigureAwait(false);
 
-        var userIdentity = await CreateUserIdentity(connection);
+        var userIdentity = CreateUserIdentity(connection);
 
         var session = await Session.Create(
             config,
@@ -58,7 +58,8 @@ internal static class SessionFactory
             sessionName: options.ApplicationName,
             sessionTimeout: (uint)(connection.SessionTimeout * 1000),
             identity: userIdentity,
-            preferredLocales: null).ConfigureAwait(false);
+            preferredLocales: null,
+            cancellationToken).ConfigureAwait(false);
 
         return new OpcUaSession(session);
     }
@@ -133,14 +134,14 @@ internal static class SessionFactory
         return config;
     }
 
-    private static async Task<IUserIdentity> CreateUserIdentity(Connection connection)
+    private static IUserIdentity CreateUserIdentity(Connection connection)
     {
         return connection.Authentication switch
         {
             AuthenticationMode.Anonymous => new UserIdentity(new AnonymousIdentityToken()),
             AuthenticationMode.UsernamePassword => new UserIdentity(connection.Username, connection.Password),
             AuthenticationMode.Certificate => new UserIdentity(LoadCertificate(connection)),
-            _ => throw new ArgumentOutOfRangeException(nameof(connection.Authentication), connection.Authentication, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(connection), connection.Authentication, null),
         };
     }
 

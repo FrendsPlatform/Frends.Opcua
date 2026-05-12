@@ -14,6 +14,7 @@ public class Connection
     /// </summary>
     /// <example>localhost</example>
     [DefaultValue("localhost")]
+    [DisplayFormat(DataFormatString = "Text")]
     public string ServerName { get; set; }
 
     /// <summary>
@@ -22,6 +23,13 @@ public class Connection
     /// <example>4080</example>
     [DefaultValue(4080)]
     public int Port { get; set; }
+
+    /// <summary>
+    /// Optional parameter to set a specific path to the server URL.
+    /// </summary>
+    /// <example>path</example>
+    [DisplayFormat(DataFormatString = "Text")]
+    public string Path { get; set; } = string.Empty;
 
     /// <summary>
     /// Whether to accept untrusted/self-signed server certificates.
@@ -43,6 +51,7 @@ public class Connection
     /// </summary>
     /// <example>user</example>
     [UIHint(nameof(Authentication), "", AuthenticationMode.UsernamePassword)]
+    [DisplayFormat(DataFormatString = "Text")]
     public string Username { get; set; }
 
     /// <summary>
@@ -50,6 +59,7 @@ public class Connection
     /// </summary>
     /// <example>pass</example>
     [PasswordPropertyText]
+    [DisplayFormat(DataFormatString = "Text")]
     [UIHint(nameof(Authentication), "", AuthenticationMode.UsernamePassword)]
     public string Password { get; set; }
 
@@ -58,6 +68,7 @@ public class Connection
     /// </summary>
     /// <example>C:\path\to\certificate</example>
     [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
+    [DisplayFormat(DataFormatString = "Text")]
     public string CertificatePath { get; set; }
 
     /// <summary>
@@ -66,6 +77,7 @@ public class Connection
     /// <example>Password</example>
     [PasswordPropertyText]
     [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
+    [DisplayFormat(DataFormatString = "Text")]
     public string CertificatePassword { get; set; }
 
     /// <summary>
@@ -73,6 +85,7 @@ public class Connection
     /// </summary>
     /// <example>C:\path\to\privatekey</example>
     [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
+    [DisplayFormat(DataFormatString = "Text")]
     public string PrivateKeyPath { get; set; }
 
     /// <summary>
@@ -106,6 +119,7 @@ public class Connection
     /// </summary>
     /// <example>C:\path\to\cert</example>
     [UIHint(nameof(SecurityMode), "", OpcMessageSecurityMode.Sign, OpcMessageSecurityMode.SignAndEncrypt)]
+    [DisplayFormat(DataFormatString = "Text")]
     public string ApplicationCertificatePath { get; set; }
 
     /// <summary>
@@ -115,6 +129,7 @@ public class Connection
     /// <example>passphrase</example>
     [PasswordPropertyText]
     [UIHint(nameof(SecurityMode), "", OpcMessageSecurityMode.Sign, OpcMessageSecurityMode.SignAndEncrypt)]
+    [DisplayFormat(DataFormatString = "Text")]
     public string ApplicationCertificatePassword { get; set; }
 
     /// <summary>

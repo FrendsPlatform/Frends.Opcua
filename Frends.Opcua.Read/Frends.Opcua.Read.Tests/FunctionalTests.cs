@@ -22,6 +22,7 @@ internal class FunctionalTests
         {
             ServerName = "localhost",
             Port = 50000,
+            Path = string.Empty,
             AutoAcceptUntrustedCertificates = true,
             Authentication = AuthenticationMode.Anonymous,
             ConnectionTimeout = 10,
@@ -34,6 +35,7 @@ internal class FunctionalTests
         {
             ServerName = "localhost",
             Port = 50001,
+            Path = string.Empty,
             AutoAcceptUntrustedCertificates = true,
             Authentication = AuthenticationMode.UsernamePassword,
             ConnectionTimeout = 10,
@@ -50,6 +52,7 @@ internal class FunctionalTests
         {
             ServerName = "localhost",
             Port = 50002,
+            Path = string.Empty,
             AutoAcceptUntrustedCertificates = true,
             Authentication = AuthenticationMode.Certificate,
             ConnectionTimeout = 10,
@@ -72,6 +75,20 @@ internal class FunctionalTests
     [Test]
     public async Task Opcua_ReadWithAnonymousAccess()
     {
+        var input = new Input
+        {
+            Mode = OpcOperationMode.Read,
+            NodeIds = new string[] { "ns=3;s=StepUp", "ns=3;s=RandomSignedInt32" },
+        };
+
+        var result = await Opcua.Read(input, connectionAnonymous, options, default);
+        Assert.That(result.Success, Is.True);
+    }
+
+    [Test]
+    public async Task Opcua_ReadWithAnonymousAccessIPAddress()
+    {
+        connectionAnonymous.ServerName = "127.0.0.1";
         var input = new Input
         {
             Mode = OpcOperationMode.Read,

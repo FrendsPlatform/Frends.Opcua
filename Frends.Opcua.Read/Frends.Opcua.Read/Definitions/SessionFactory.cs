@@ -21,7 +21,10 @@ internal static class SessionFactory
     CancellationToken cancellationToken)
     {
         var config = await BuildApplicationConfiguration(options, connection, cancellationToken);
-        var serverUrl = $"opc.tcp://{connection.ServerName}:{connection.Port}";
+        var path = !string.IsNullOrWhiteSpace(connection.Path)
+            ? $"/{connection.Path.TrimStart('/').TrimEnd('/')}"
+            : string.Empty;
+        var serverUrl = $"opc.tcp://{connection.ServerName}:{connection.Port}{path}";
 
         var endpointConfig = EndpointConfiguration.Create(config);
         endpointConfig.MaxMessageSize = 4194304;

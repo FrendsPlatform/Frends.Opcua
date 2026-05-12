@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "==> Running from: $(pwd)"
+echo "==> Output dir: $OUTPUT_DIR"
+echo "==> PKI dir: $PKI_DIR"
+
 # ---------------------------------------------------------------------------
 # generate-certs.sh (FIXED for Git Bash / MSYS2 + Windows OpenSSL)
 # ---------------------------------------------------------------------------

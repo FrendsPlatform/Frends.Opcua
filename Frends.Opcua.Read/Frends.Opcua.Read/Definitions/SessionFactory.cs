@@ -134,7 +134,7 @@ internal static class SessionFactory
         return config;
     }
 
-    private static IUserIdentity CreateUserIdentity(Connection connection)
+    private static UserIdentity CreateUserIdentity(Connection connection)
     {
         return connection.Authentication switch
         {

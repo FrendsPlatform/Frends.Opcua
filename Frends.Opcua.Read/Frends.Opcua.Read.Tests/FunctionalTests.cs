@@ -198,8 +198,9 @@ internal class FunctionalTests
             NodeIds = new string[] { "ns=3;s=StepUp", "ns=3;s=RandomSignedInt32" },
         };
 
-        connectionSecure.Authentication = AuthenticationMode.Certificate;
-        connectionSecure.SecurityMode = OpcMessageSecurityMode.SignAndEncrypt;
+        Console.WriteLine($"Volumes dir: {connectionSecure.CertificatePath}");
+        Console.WriteLine($"Absolute path: {Path.GetFullPath(connectionSecure.CertificatePath)}");
+        Console.WriteLine($"Volumes exists: {Directory.Exists(connectionSecure.CertificatePath)}");
 
         var result = await Opcua.Read(input, connectionSecure, options, default);
         Assert.That(result.Success, Is.True);
@@ -216,9 +217,6 @@ internal class FunctionalTests
             Mode = OpcOperationMode.Browse,
             StartNodeId = "ns=3;s=StepUp",
         };
-
-        connectionSecure.Authentication = AuthenticationMode.Certificate;
-        connectionSecure.SecurityMode = OpcMessageSecurityMode.SignAndEncrypt;
 
         var result = await Opcua.Read(input, connectionSecure, options, default);
         Assert.That(result.Success, Is.True);

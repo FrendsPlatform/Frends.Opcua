@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> Running from: $(pwd)"
-echo "==> Output dir: $OUTPUT_DIR"
-echo "==> PKI dir: $PKI_DIR"
-
 # ---------------------------------------------------------------------------
 # generate-certs.sh (FIXED for Git Bash / MSYS2 + Windows OpenSSL)
 # ---------------------------------------------------------------------------
@@ -12,6 +8,10 @@ echo "==> PKI dir: $PKI_DIR"
 PFX_PASSWORD="yourpassword"
 OUTPUT_DIR="./Volumes"
 PKI_DIR="./Volumes/pki"
+
+echo "==> Running from: $(pwd)"
+echo "==> Output dir: $OUTPUT_DIR"
+echo "==> PKI dir: $PKI_DIR"
 
 while [[ $# -gt 0 ]]; do
     case $1 in

@@ -15,14 +15,14 @@ public class Connection
     /// <example>localhost</example>
     [DefaultValue("localhost")]
     [DisplayFormat(DataFormatString = "Text")]
-    public string ServerName { get; set; }
+    public string ServerName { get; set; } = "localhost";
 
     /// <summary>
     /// Port to be used to connect to the OPC UA Server.
     /// </summary>
     /// <example>4080</example>
     [DefaultValue(4080)]
-    public int Port { get; set; }
+    public int Port { get; set; } = 4080;
 
     /// <summary>
     /// Optional parameter to set a specific path to the server URL.

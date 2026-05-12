@@ -10,13 +10,11 @@ internal class ErrorHandlerTest : TestBase
     private const string CustomErrorMessage = "CustomErrorMessage";
 
     [Test]
-    [Obsolete]
-    public async Task Should_Throw_Error_When_ThrowErrorOnFailure_Is_True(Exception exception)
+    public void Should_Throw_Error_When_ThrowErrorOnFailure_Is_True()
     {
-        AsyncTestDelegate call = async () =>
-    await Opcua.Read(DefaultInput(), DefaultConnection(), DefaultOptions(), default);
+        Func<Task> act = async () => await Opcua.Read(DefaultInput(), DefaultConnection(), DefaultOptions(), default);
 
-        var ex = Assert.ThrowsAsync<Exception>(call);
+        var ex = Assert.ThrowsAsync<Exception>(act);
         Assert.That(ex, Is.Not.Null);
     }
 
@@ -30,16 +28,14 @@ internal class ErrorHandlerTest : TestBase
     }
 
     [Test]
-    [Obsolete]
     public void Should_Use_Custom_ErrorMessageOnFailure()
     {
         var options = DefaultOptions();
         options.ErrorMessageOnFailure = CustomErrorMessage;
 
-        var ex = Assert.ThrowsAsync<Exception>((AsyncTestDelegate)(() =>
-            Opcua.Read(DefaultInput(), DefaultConnection(), options, default)));
+        Func<Task> act = async () => await Opcua.Read(DefaultInput(), DefaultConnection(), options, default);
 
-        Assert.That(ex, Is.Not.Null);
-        Assert.That(ex.Message, Contains.Substring(CustomErrorMessage));
+        var ex = Assert.ThrowsAsync<Exception>(act);
+        Assert.That(ex!.Message, Does.Contain(CustomErrorMessage));
     }
 }

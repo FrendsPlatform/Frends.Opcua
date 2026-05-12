@@ -35,10 +35,10 @@ public static class Opcua
         [PropertyTab] Options options,
         CancellationToken cancellationToken)
     {
-        ValidateInput(input, connection);
-
         try
         {
+            ValidateInput(input, connection);
+
             await using var session = await SessionFactory.CreateAsync(options, connection, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();

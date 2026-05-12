@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Frends.Opcua.Read.Definitions;
 using Frends.Opcua.Read.Enums;
@@ -83,6 +84,18 @@ internal class FunctionalTests
 
         var result = await Opcua.Read(input, connectionAnonymous, options, default);
         Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+        Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+
+        connectionAnonymous.Path = "opcplc-anonymous";
+
+        result = await Opcua.Read(input, connectionAnonymous, options, default);
+        Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+        Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+
     }
 
     [Test]
@@ -97,10 +110,21 @@ internal class FunctionalTests
 
         var result = await Opcua.Read(input, connectionAnonymous, options, default);
         Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+        Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+
+        connectionAnonymous.Path = "opcplc-anonymous";
+
+        result = await Opcua.Read(input, connectionAnonymous, options, default);
+        Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+        Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
     }
 
     [Test]
-    public async Task Opcua_ReadTestBrowseWithAnonymous()
+    public async Task Opcua_BrowseWithAnonymous()
     {
         var input = new Input
         {
@@ -110,6 +134,15 @@ internal class FunctionalTests
 
         var result = await Opcua.Read(input, connectionAnonymous, options, default);
         Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+
+        connectionAnonymous.Path = "opcplc-anonymous";
+
+        result = await Opcua.Read(input, connectionAnonymous, options, default);
+        Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
     }
 
     [Test]
@@ -136,6 +169,8 @@ internal class FunctionalTests
 
         var result = await Opcua.Read(input, connectionUsernamePassword, options, default);
         Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
     }
 
     [Test]
@@ -169,6 +204,10 @@ internal class FunctionalTests
 
         var result = await Opcua.Read(input, connectionSecure, options, default);
         Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+        Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+
     }
 
     [Test]
@@ -185,5 +224,7 @@ internal class FunctionalTests
 
         var result = await Opcua.Read(input, connectionSecure, options, default);
         Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
     }
 }

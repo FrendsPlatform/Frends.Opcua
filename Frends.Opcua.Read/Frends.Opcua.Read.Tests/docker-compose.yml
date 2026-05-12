@@ -9,6 +9,7 @@ services:
       - "--pn=50000"
       - "--autoaccept"
       - "--unsecuretransport"
+      - "--sph"
     restart: unless-stopped
 
   opc-ua-username-password:

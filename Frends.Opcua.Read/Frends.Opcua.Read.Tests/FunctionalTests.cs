@@ -95,7 +95,6 @@ internal class FunctionalTests
 
         Assert.That(result.NodeValues, Is.Not.Empty);
         Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
-
     }
 
     [Test]
@@ -207,7 +206,6 @@ internal class FunctionalTests
 
         Assert.That(result.NodeValues, Is.Not.Empty);
         Assert.That(result.NodeValues.All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", result.NodeValues.Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
-
     }
 
     [Test]

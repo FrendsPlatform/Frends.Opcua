@@ -126,7 +126,7 @@ public static class Opcua
 
         ClientBase.ValidateResponse(dataValues, nodesToRead);
 
-        // Map results to JSON
+        // Map results to JSON.
         var resultArray = new JArray();
 
         for (int i = 0; i < nodeIds.Count; i++)

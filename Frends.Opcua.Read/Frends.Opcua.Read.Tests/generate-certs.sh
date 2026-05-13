@@ -1,23 +1,29 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eo pipefail
 
 # ---------------------------------------------------------------------------
-# generate-certs.sh (FIXED for Git Bash / MSYS2 + Windows OpenSSL)
+# generate-certs.sh
+# Generates an OPC UA user certificate and places it in the correct locations
+# for the opc-ua-certificate Docker container and the test project.
+#
+# Usage: ./generate-certs.sh [OPTIONS]
+#   -p, --password    PFX password (default: yourpassword)
+#   -o, --output      Output directory for PFX and source files (default: ./Volumes)
+#   -k, --pki         PKI directory to mount into the container (default: ./Volumes/pki)
+#   -h, --help        Show this help message
 # ---------------------------------------------------------------------------
 
+# Defaults
 PFX_PASSWORD="yourpassword"
 OUTPUT_DIR="./Volumes"
 PKI_DIR="./Volumes/pki"
 
-echo "==> Running from: $(pwd)"
-echo "==> Output dir: $OUTPUT_DIR"
-echo "==> PKI dir: $PKI_DIR"
-
+# Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -p|--password) PFX_PASSWORD="$2"; shift 2 ;;
-        -o|--output)   OUTPUT_DIR="$2"; shift 2 ;;
-        -k|--pki)      PKI_DIR="$2"; shift 2 ;;
+        -p|--password)  PFX_PASSWORD="$2"; shift 2 ;;
+        -o|--output)    OUTPUT_DIR="$2";   shift 2 ;;
+        -k|--pki)       PKI_DIR="$2";      shift 2 ;;
         -h|--help)
             sed -n '/^# Usage/,/^# ---/p' "$0" | head -n -1
             exit 0
@@ -27,32 +33,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 TRUSTED_USER_DIR="$PKI_DIR/trusted-user/certs"
-
-# -----------------------------
-# FIX: avoid mktemp /tmp issues
-# -----------------------------
-WORK_DIR="$PWD/.tmp-opcua-certs"
-rm -rf "$WORK_DIR"
-mkdir -p "$WORK_DIR"
-
+WORK_DIR=$(mktemp -d)
 trap 'rm -rf "$WORK_DIR"' EXIT
-
-echo "==> Using WORK_DIR: $WORK_DIR"
-
-# -----------------------------
-# Path conversion helper
-# -----------------------------
-to_winpath() {
-    if command -v cygpath >/dev/null 2>&1; then
-        cygpath -w "$1"
-    else
-        echo "$1"
-    fi
-}
 
 echo "==> Generating OPC UA user certificate..."
 
-# Write OpenSSL config
+# Write extensions config
 cat > "$WORK_DIR/user_cert_ext.cnf" << 'EOF'
 [req]
 req_extensions = v3_req
@@ -77,47 +63,41 @@ extendedKeyUsage = clientAuth
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = localhost
 URI.1 = urn:opcua:client:user
 EOF
 
-CFG=$(to_winpath "$WORK_DIR/user_cert_ext.cnf")
-KEY=$(to_winpath "$WORK_DIR/user.key")
-CRT=$(to_winpath "$WORK_DIR/user.crt")
-
-# Generate key + cert
+# Generate private key and self-signed certificate
 MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:2048 -days 365 -nodes \
-    -keyout "$KEY" \
-    -out "$CRT" \
-    -subj "/CN=opcua-client-user" \
+    -keyout "$WORK_DIR/user.key" \
+    -out    "$WORK_DIR/user.crt" \
+    -subj   "/CN=opcua-client-user" \
     -extensions v3_ca \
-    -config "$CFG"
+    -config "$WORK_DIR/user_cert_ext.cnf"
 
 echo "==> Verifying certificate extensions..."
 CERT_TEXT=$(openssl x509 -in "$WORK_DIR/user.crt" -text -noout)
 
-for REQUIRED in "Digital Signature" "Non Repudiation" "Key Encipherment" "Data Encipherment" "TLS Web Client Authentication" "CA:FALSE" "urn:opcua:client:user"; do
+for REQUIRED in "Digital Signature" "Non Repudiation" "Key Encipherment" "Data Encipherment" "TLS Web Client Authentication" "CA:FALSE" "URI:urn:opcua:client:user"; do
     if ! echo "$CERT_TEXT" | grep -q "$REQUIRED"; then
-        echo "ERROR: Missing extension: $REQUIRED"
+        echo "ERROR: Required extension not found: $REQUIRED"
         exit 1
     fi
 done
+echo "    All required extensions present."
 
-# DER conversion
-DER=$(to_winpath "$WORK_DIR/user.der")
-openssl x509 -in "$CRT" -outform DER -out "$DER"
+# Convert to DER for the server trust store
+openssl x509 -in "$WORK_DIR/user.crt" -outform DER -out "$WORK_DIR/user.der"
 
-# PFX export
-PFX=$(to_winpath "$WORK_DIR/user.pfx")
+# Create PFX with unencrypted private key (required by OPC UA SDK)
 openssl pkcs12 -export \
     -keypbe NONE -certpbe NONE \
     -name opcua-client-user \
-    -in "$CRT" \
-    -inkey "$KEY" \
-    -out "$PFX" \
+    -in      "$WORK_DIR/user.crt" \
+    -inkey   "$WORK_DIR/user.key" \
+    -out     "$WORK_DIR/user.pfx" \
     -passout "pass:$PFX_PASSWORD"
 
-echo "==> Creating directories..."
+echo "==> Creating directory structure..."
 mkdir -p "$TRUSTED_USER_DIR"
 mkdir -p "$PKI_DIR/own"
 mkdir -p "$PKI_DIR/trusted/certs"
@@ -126,21 +106,21 @@ mkdir -p "$PKI_DIR/issuer-user/certs"
 mkdir -p "$PKI_DIR/rejected/certs"
 mkdir -p "$OUTPUT_DIR"
 
-echo "==> Copying files..."
+echo "==> Setting permissions on PKI directory..."
+chmod -R 777 "$PKI_DIR"
 
+echo "==> Copying DER to trusted-user store: $TRUSTED_USER_DIR"
 cp "$WORK_DIR/user.der" "$TRUSTED_USER_DIR/user.der"
+
+echo "==> Copying PFX to output directory: $OUTPUT_DIR"
 cp "$WORK_DIR/user.pfx" "$OUTPUT_DIR/user.pfx"
 
 echo ""
-echo "==> DONE"
+echo "==> Done. Summary:"
 echo "    PFX password : $PFX_PASSWORD"
-echo "    PFX file     : $OUTPUT_DIR/user.pfx"
-echo "    DER file     : $TRUSTED_USER_DIR/user.der"
-
+echo "    PFX location : $OUTPUT_DIR/user.pfx"
+echo "    DER location : $TRUSTED_USER_DIR/user.der"
+echo "    Thumbprint   : $(openssl x509 -in "$WORK_DIR/user.crt" -noout -fingerprint -sha1 | cut -d= -f2)"
 echo ""
-echo "==> Thumbprint:"
-openssl x509 -in "$WORK_DIR/user.crt" -noout -fingerprint -sha1 | cut -d= -f2
-
-echo ""
-echo "==> Ready for Docker:"
+echo "==> You can now start the Docker containers:"
 echo "    docker compose up -d"

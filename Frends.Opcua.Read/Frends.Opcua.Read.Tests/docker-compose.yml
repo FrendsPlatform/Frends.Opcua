@@ -22,6 +22,7 @@ services:
       - "--pn=50000"
       - "--autoaccept"
       - "--disableanonymousauth"
+      - "--disablecertauth"
       - "--defaultuser=admin"
       - "--defaultpassword=admin"
     restart: unless-stopped
@@ -36,6 +37,7 @@ services:
       - "--pn=50000"
       - "--autoaccept"
       - "--disableanonymousauth"
+      - "--disableusernamepasswordauth"
     volumes:
       - ./Volumes/pki:/app/pki
     restart: unless-stopped

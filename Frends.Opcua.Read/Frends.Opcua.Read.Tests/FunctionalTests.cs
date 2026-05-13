@@ -223,4 +223,21 @@ internal class FunctionalTests
 
         Assert.That(result.NodeValues, Is.Not.Empty);
     }
+
+    [Test]
+    public async Task TEST()
+    {
+        connectionSecure.Port = 50001;
+
+        var input = new Input
+        {
+            Mode = OpcOperationMode.Browse,
+            StartNodeId = "ns=3;s=StepUp",
+        };
+
+        var result = await Opcua.Read(input, connectionSecure, options, default);
+        Assert.That(result.Success, Is.True);
+
+        Assert.That(result.NodeValues, Is.Not.Empty);
+    }
 }

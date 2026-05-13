@@ -21,7 +21,7 @@ namespace Frends.Opcua.Read;
 public static class Opcua
 {
     /// <summary>
-    /// Task for reading data from OPCUA Server
+    /// Task for reading data from OPCUA Server.
     /// [Documentation](https://tasks.frends.com/tasks/frends-tasks/Frends-Opcua-Read)
     /// </summary>
     /// <param name="input">Essential parameters.</param>

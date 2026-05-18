@@ -35,6 +35,9 @@ public static class Opcua
         [PropertyTab] Options options,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(options);
+
         try
         {
             ValidateInput(input, connection);
@@ -50,7 +53,7 @@ public static class Opcua
             {
                 BrowseRecursive(
                 session.Session,
-                ObjectIds.ObjectsFolder,
+                NodeId.Parse(input.StartNodeId),
                 collectedNodes,
                 visited);
             }

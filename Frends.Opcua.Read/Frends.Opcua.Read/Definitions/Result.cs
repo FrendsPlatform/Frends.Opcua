@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace Frends.Opcua.Read.Definitions;
+﻿namespace Frends.Opcua.Read.Definitions;
 
 /// <summary>
 /// Result of the task.
@@ -18,7 +16,7 @@ public class Result
     /// Each element contains NodeId, Value, DataType, StatusCode, and SourceTimestamp.
     /// </summary>
     /// <example>{ }</example>
-    public JToken NodeValues { get; set; }
+    public dynamic NodeValues { get; set; }
 
     /// <summary>
     /// Error message if the operation failed.

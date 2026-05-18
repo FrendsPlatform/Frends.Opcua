@@ -121,7 +121,9 @@ internal static class SessionFactory
 
         // Always accept all certificates — no trust store on disk needed
         config.CertificateValidator = new CertificateValidator();
-        config.CertificateValidator.CertificateValidation += (sender, e) => e.Accept = true;
+
+        if (connection.AutoAcceptUntrustedCertificates)
+            config.CertificateValidator.CertificateValidation += (sender, e) => e.Accept = true;
 
         await config.Validate(ApplicationType.Client);
 

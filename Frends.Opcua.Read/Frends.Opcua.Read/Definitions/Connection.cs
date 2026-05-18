@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Frends.Opcua.Read.Attributes;
 using Frends.Opcua.Read.Enums;
 
 namespace Frends.Opcua.Read.Definitions;
@@ -50,8 +51,9 @@ public class Connection
     /// Username for the authentication.
     /// </summary>
     /// <example>user</example>
-    [UIHint(nameof(Authentication), "", AuthenticationMode.UsernamePassword)]
     [DisplayFormat(DataFormatString = "Text")]
+    [RequiredIf(nameof(Authentication), AuthenticationMode.UsernamePassword)]
+    [UIHint(nameof(Authentication), "", AuthenticationMode.UsernamePassword)]
     public string Username { get; set; }
 
     /// <summary>
@@ -60,6 +62,7 @@ public class Connection
     /// <example>pass</example>
     [PasswordPropertyText]
     [DisplayFormat(DataFormatString = "Text")]
+    [RequiredIf(nameof(Authentication), AuthenticationMode.UsernamePassword)]
     [UIHint(nameof(Authentication), "", AuthenticationMode.UsernamePassword)]
     public string Password { get; set; }
 
@@ -67,8 +70,9 @@ public class Connection
     /// Path to the certificate to be used to authenticate to OPC UA Server.
     /// </summary>
     /// <example>C:\path\to\certificate</example>
-    [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     [DisplayFormat(DataFormatString = "Text")]
+    [RequiredIf(nameof(Authentication), AuthenticationMode.Certificate)]
+    [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     public string CertificatePath { get; set; }
 
     /// <summary>
@@ -76,16 +80,17 @@ public class Connection
     /// </summary>
     /// <example>Password</example>
     [PasswordPropertyText]
-    [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     [DisplayFormat(DataFormatString = "Text")]
+    [RequiredIf(nameof(Authentication), AuthenticationMode.Certificate)]
+    [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     public string CertificatePassword { get; set; }
 
     /// <summary>
     /// Path to the private key.
     /// </summary>
     /// <example>C:\path\to\privatekey</example>
-    [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     [DisplayFormat(DataFormatString = "Text")]
+    [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     public string PrivateKeyPath { get; set; }
 
     /// <summary>

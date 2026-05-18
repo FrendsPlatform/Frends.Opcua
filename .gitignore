@@ -18,6 +18,11 @@ client.crt
 client.csr
 passwd
 
+# Local environment secrets
+.env
+.env.*
+!.env.example
+
 # User-specific files
 *.rsuser
 *.suo

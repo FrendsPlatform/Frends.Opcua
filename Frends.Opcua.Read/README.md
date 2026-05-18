@@ -22,7 +22,11 @@ You can install the Task via Frends UI Task View.
 
 ### Run tests
 
-Run the tests
+`cd Frends.Opcua.Read.Tests`
+
+`./generate-certs.sh`
+
+`docker-compose up -d`
 
 `dotnet test`
 

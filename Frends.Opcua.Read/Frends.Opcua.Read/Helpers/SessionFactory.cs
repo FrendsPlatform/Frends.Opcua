@@ -11,7 +11,7 @@ using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Security.Certificates;
 
-namespace Frends.Opcua.Read.Factories;
+namespace Frends.Opcua.Read.Helpers;
 
 internal static class SessionFactory
 {
@@ -69,7 +69,7 @@ internal static class SessionFactory
     Connection connection,
     CancellationToken cancellationToken)
     {
-        var tempPath = Path.Combine(Path.GetTempPath(), "opcua-client");
+        var pkiPath = string.IsNullOrWhiteSpace(options.PkiRootPath) ? Path.Combine(Path.GetTempPath(), "opcua-client") : options.PkiRootPath;
 
         var config = new ApplicationConfiguration
         {
@@ -83,17 +83,17 @@ internal static class SessionFactory
                 TrustedPeerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = Path.Combine(tempPath, "trusted"),
+                    StorePath = Path.Combine(pkiPath, "trusted"),
                 },
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = Path.Combine(tempPath, "issuer"),
+                    StorePath = Path.Combine(pkiPath, "issuer"),
                 },
                 RejectedCertificateStore = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = Path.Combine(tempPath, "rejected"),
+                    StorePath = Path.Combine(pkiPath, "rejected"),
                 },
                 AutoAcceptUntrustedCertificates = connection.AutoAcceptUntrustedCertificates,
                 AddAppCertToTrustedStore = false,
@@ -150,6 +150,9 @@ internal static class SessionFactory
     private static X509Certificate2 LoadCertificate(Connection connection)
     {
         var ext = Path.GetExtension(connection.CertificatePath).ToLowerInvariant();
+
+        if (connection.SecurityMode != OpcMessageSecurityMode.SignAndEncrypt)
+            throw new ArgumentException("Certificate authentication requires SecurityMode SignAndEncrypt.", nameof(connection));
 
         return ext switch
         {

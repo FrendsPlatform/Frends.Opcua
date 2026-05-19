@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Opc.Ua.Client;
 
-namespace Frends.Opcua.Read.Factories;
+namespace Frends.Opcua.Read.Helpers;
 
 /// <summary>
 /// A disposable wrapper around an OPC UA <see cref="Session"/> that closes
@@ -24,7 +24,7 @@ internal sealed class OpcUaSession : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         if (Session.Connected)
-            await Task.Run(() => Session.Close()).ConfigureAwait(false);
+            await Session.CloseAsync().ConfigureAwait(false);
 
         Session.Dispose();
     }

@@ -26,7 +26,7 @@ public class Options
     /// </list>
     /// On first connect the SDK generates a self-signed application certificate and saves it
     /// under <c>{PkiRootPath}/own</c>, which is then reused on subsequent runs.
-    /// Required when OpcMessageSecurityMode is anything other than <c>None</c>.
+    /// Only applicable when OpcMessageSecurityMode is anything other than <c>None</c>.
     /// </summary>
     /// <example>./pki</example>
     public string PkiRootPath { get; set; }

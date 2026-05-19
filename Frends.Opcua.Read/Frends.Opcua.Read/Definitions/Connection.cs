@@ -15,6 +15,7 @@ public class Connection
     /// </summary>
     /// <example>localhost</example>
     [DefaultValue("localhost")]
+    [Required]
     [DisplayFormat(DataFormatString = "Text")]
     public string ServerName { get; set; } = "localhost";
 
@@ -23,6 +24,7 @@ public class Connection
     /// </summary>
     /// <example>4080</example>
     [DefaultValue(4080)]
+    [Required]
     public int Port { get; set; } = 4080;
 
     /// <summary>
@@ -71,7 +73,7 @@ public class Connection
     /// </summary>
     /// <example>C:\path\to\certificate</example>
     [DisplayFormat(DataFormatString = "Text")]
-    [RequiredIf(nameof(Authentication), AuthenticationMode.Certificate)]
+    [RequiredToExistIf(nameof(Authentication), true, AuthenticationMode.Certificate)]
     [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     public string CertificatePath { get; set; }
 
@@ -81,12 +83,11 @@ public class Connection
     /// <example>Password</example>
     [PasswordPropertyText]
     [DisplayFormat(DataFormatString = "Text")]
-    [RequiredIf(nameof(Authentication), AuthenticationMode.Certificate)]
     [UIHint(nameof(Authentication), "", AuthenticationMode.Certificate)]
     public string CertificatePassword { get; set; }
 
     /// <summary>
-    /// Path to the private key.
+    /// Path to the private key. Used forr certificate authentication if .der or .crt typed certifications are being used.
     /// </summary>
     /// <example>C:\path\to\privatekey</example>
     [DisplayFormat(DataFormatString = "Text")]

@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Frends.Opcua.Read.Definitions;
 using Frends.Opcua.Read.Enums;
-using Frends.Opcua.Read.Factories;
 using Frends.Opcua.Read.Helpers;
 using Newtonsoft.Json.Linq;
 using Opc.Ua;
@@ -35,12 +34,13 @@ public static class Opcua
         [PropertyTab] Options options,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(connection);
         ArgumentNullException.ThrowIfNull(options);
 
         try
         {
-            ValidateInput(input, connection);
+            ValidationHandler.Run(input, connection, options);
 
             await using var session = await SessionFactory.CreateAsync(options, connection, cancellationToken);
 
@@ -78,31 +78,6 @@ public static class Opcua
         {
             return ErrorHandler.Handle(ex, options);
         }
-    }
-
-    private static void ValidateInput(Input input, Connection connection)
-    {
-        ArgumentNullException.ThrowIfNull(input);
-        if (string.IsNullOrWhiteSpace(connection.ServerName))
-            throw new ArgumentException("ServerName must not be empty.", nameof(connection));
-        if (input.Mode == OpcOperationMode.Read && (input.NodeIds == null || input.NodeIds.Length == 0))
-            throw new ArgumentException("NodeIds list must contain at least one NodeId.", nameof(input));
-        if (input.Mode == OpcOperationMode.Browse && string.IsNullOrWhiteSpace(input.StartNodeId))
-            throw new ArgumentException("StartNodeId must be provided.", nameof(input));
-        if (connection.Authentication == AuthenticationMode.Certificate)
-        {
-            if (string.IsNullOrWhiteSpace(connection.CertificatePath))
-                throw new ArgumentException("CertificatePath is required for Certificate authentication.", nameof(connection));
-            if (!File.Exists(connection.CertificatePath))
-                throw new FileNotFoundException("Certificate file not found.", connection.CertificatePath);
-            if (connection.SecurityMode != OpcMessageSecurityMode.SignAndEncrypt)
-                throw new ArgumentException("Certificate authentication requires SecurityMode SignAndEncrypt.", nameof(connection));
-        }
-
-        if (connection.SecurityMode != OpcMessageSecurityMode.None &&
-            !string.IsNullOrWhiteSpace(connection.ApplicationCertificatePath) &&
-            !File.Exists(connection.ApplicationCertificatePath))
-            throw new FileNotFoundException("Application certificate file not found.", connection.ApplicationCertificatePath);
     }
 
     private static JArray ReadNodes(Session session, List<string> nodeIds)

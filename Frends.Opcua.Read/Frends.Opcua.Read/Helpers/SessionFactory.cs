@@ -123,7 +123,13 @@ internal static class SessionFactory
         config.CertificateValidator = new CertificateValidator();
 
         if (connection.AutoAcceptUntrustedCertificates)
-            config.CertificateValidator.CertificateValidation += (sender, e) => e.Accept = true;
+        {
+            config.CertificateValidator.CertificateValidation += static (sender, e) =>
+            {
+                if (e.Error.Code == StatusCodes.BadCertificateUntrusted)
+                    e.Accept = true;
+            };
+        }
 
         await config.Validate(ApplicationType.Client);
 

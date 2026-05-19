@@ -177,9 +177,28 @@ public static class Opcua
         if (results == null || results.Count == 0 || results[0].References == null)
             return;
 
-        foreach (var reference in results[0].References)
+        // Accumulate all references, paging through continuation points
+        var allReferences = new ReferenceDescriptionCollection(results[0].References);
+
+        var continuationPoint = results[0].ContinuationPoint;
+        while (continuationPoint != null && continuationPoint.Length > 0)
         {
-            // Convert ExpandedNodeId → NodeId
+            session.BrowseNext(
+                null,
+                false,  // releaseContinuationPoint = false means "give me more"
+                new ByteStringCollection { continuationPoint },
+                out BrowseResultCollection nextResults,
+                out DiagnosticInfoCollection nextDiagnosticInfos);
+
+            if (nextResults == null || nextResults.Count == 0 || nextResults[0].References == null)
+                break;
+
+            allReferences.AddRange(nextResults[0].References);
+            continuationPoint = nextResults[0].ContinuationPoint;
+        }
+
+        foreach (var reference in allReferences)
+        {
             var childNodeId = ExpandedNodeId.ToNodeId(
                 reference.NodeId,
                 session.NamespaceUris);
@@ -187,11 +206,9 @@ public static class Opcua
             if (childNodeId == null)
                 continue;
 
-            // Only collect Variable nodes (values you can read)
             if (reference.NodeClass == NodeClass.Variable)
                 collectedNodes.Add(childNodeId.ToString());
 
-            // Recurse into Objects / folders
             if (reference.NodeClass == NodeClass.Object || reference.NodeClass == NodeClass.Method)
                 BrowseRecursive(session, childNodeId, collectedNodes, visited);
         }

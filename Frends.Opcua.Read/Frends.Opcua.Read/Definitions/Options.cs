@@ -14,7 +14,7 @@ public class Options
     /// <example>Frends.OpcUa.Client</example>
     [DefaultValue("Frends.OpcUa.Client")]
     [DisplayFormat(DataFormatString = "Text")]
-    public string ApplicationName { get; set; }
+    public string ApplicationName { get; set; } = "Frends.OpcUa.Client";
 
     /// <summary>
     /// The root directory path where the OPC UA client PKI store is located.

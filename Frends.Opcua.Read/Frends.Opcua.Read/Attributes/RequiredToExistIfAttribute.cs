@@ -27,7 +27,7 @@ internal class RequiredToExistIfAttribute(string dependentProperty, bool file, p
             return new ValidationResult(ErrorMessage ?? $"{validationContext.DisplayName} is required.");
 
         if (file && !File.Exists(value as string))
-            return new ValidationResult(ErrorMessage ?? $"Certificate inside parameter {validationContext.DisplayName} needs to exists.");
+            return new ValidationResult(ErrorMessage ?? $"Certificate inside parameter {validationContext.DisplayName} needs to exist.");
 
         return ValidationResult.Success;
     }

@@ -241,7 +241,7 @@ internal class FunctionalTests
         Func<Task> act = async () => await Opcua.Read(input, connectionSecure, options, default);
 
         var ex = Assert.ThrowsAsync<Exception>(act);
-        Assert.That(ex!.Message, Does.Contain("Certificate inside parameter CertificatePath needs to exists."));
+        Assert.That(ex!.Message, Does.Contain("Certificate inside parameter CertificatePath needs to exist."));
     }
 
     [Test]

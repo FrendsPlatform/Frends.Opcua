@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -eo pipefail
-
 # ---------------------------------------------------------------------------
 # generate-certs.sh
 # Generates an OPC UA user certificate and places it in the correct locations
@@ -12,6 +11,9 @@ set -eo pipefail
 #   -k, --pki         PKI directory to mount into the container (default: ./Volumes/pki)
 #   -h, --help        Show this help message
 # ---------------------------------------------------------------------------
+
+# Force Linux binaries, prevent WSL from picking up Windows openssl or other tools
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Defaults
 PFX_PASSWORD="yourpassword"
@@ -44,9 +46,7 @@ cat > "$WORK_DIR/user_cert_ext.cnf" << 'EOF'
 req_extensions = v3_req
 distinguished_name = req_distinguished_name
 x509_extensions = v3_ca
-
 [req_distinguished_name]
-
 [v3_ca]
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid:always,issuer
@@ -54,20 +54,18 @@ basicConstraints = critical, CA:FALSE
 keyUsage = critical, digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 extendedKeyUsage = clientAuth
 subjectAltName = @alt_names
-
 [v3_req]
 subjectKeyIdentifier = hash
 basicConstraints = critical, CA:FALSE
 keyUsage = critical, digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 extendedKeyUsage = clientAuth
 subjectAltName = @alt_names
-
 [alt_names]
 URI.1 = urn:opcua:client:user
 EOF
 
 # Generate private key and self-signed certificate
-MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:2048 -days 365 -nodes \
+openssl req -x509 -newkey rsa:2048 -days 365 -nodes \
     -keyout "$WORK_DIR/user.key" \
     -out    "$WORK_DIR/user.crt" \
     -subj   "/CN=opcua-client-user" \
@@ -76,7 +74,6 @@ MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:2048 -days 365 -nodes \
 
 echo "==> Verifying certificate extensions..."
 CERT_TEXT=$(openssl x509 -in "$WORK_DIR/user.crt" -text -noout)
-
 for REQUIRED in "Digital Signature" "Non Repudiation" "Key Encipherment" "Data Encipherment" "TLS Web Client Authentication" "CA:FALSE" "URI:urn:opcua:client:user"; do
     if ! echo "$CERT_TEXT" | grep -q "$REQUIRED"; then
         echo "ERROR: Required extension not found: $REQUIRED"
@@ -117,3 +114,6 @@ cp "$WORK_DIR/user.pfx" "$OUTPUT_DIR/user.pfx"
 
 echo ""
 echo "==> Done. Summary:"
+echo "    PFX file:      $OUTPUT_DIR/user.pfx"
+echo "    Trusted cert:  $TRUSTED_USER_DIR/user.der"
+echo "    PKI root:      $PKI_DIR"

@@ -1,0 +1,22 @@
+name: Read_test_on_main
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Frends.Opcua.Read/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: FrendsPlatform/FrendsTasks/.github/workflows/linux_build_main.yml@main
+    with:
+      workdir: Frends.Opcua.Read
+      dotnet_version: 8.0.x
+      strict_analyzers: true
+      prebuild_command: cd Frends.Opcua.Read.Tests && chmod 777 ./generate-certs.sh && ./generate-certs.sh && docker-compose up -d
+    secrets:
+      badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}

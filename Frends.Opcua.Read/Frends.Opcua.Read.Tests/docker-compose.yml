@@ -1,0 +1,43 @@
+services:
+  opc-ua-anonymous:
+    image: mcr.microsoft.com/iotedge/opc-plc:2.12.48
+    container_name: opcplc-anonymous
+    hostname: opcplc-anonymous
+    ports:
+      - "50000:50000"
+    command:
+      - "--pn=50000"
+      - "--autoaccept"
+      - "--unsecuretransport"
+      - "--sph"
+    restart: unless-stopped
+
+  opc-ua-username-password:
+    image: mcr.microsoft.com/iotedge/opc-plc:2.12.48
+    container_name: opcplc-username-password
+    hostname: opcplc-username-password
+    ports:
+      - "50001:50000"
+    command:
+      - "--pn=50000"
+      - "--autoaccept"
+      - "--disableanonymousauth"
+      - "--disablecertauth"
+      - "--defaultuser=admin"
+      - "--defaultpassword=admin"
+    restart: unless-stopped
+
+  opc-ua-certificate:
+    image: mcr.microsoft.com/iotedge/opc-plc:2.12.48
+    container_name: opcplc-secure
+    hostname: opcplc-secure
+    ports:
+      - "50002:50000"
+    command:
+      - "--pn=50000"
+      - "--autoaccept"
+      - "--disableanonymousauth"
+      - "--disableusernamepasswordauth"
+    volumes:
+      - ./Volumes/pki:/app/pki
+    restart: unless-stopped

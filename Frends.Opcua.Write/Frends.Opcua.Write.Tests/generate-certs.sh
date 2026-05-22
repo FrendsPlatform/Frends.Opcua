@@ -112,7 +112,7 @@ cp "$WORK_DIR/user.der" "$TRUSTED_USER_DIR/user.der"
 echo "==> Copying PFX to output directory: $OUTPUT_DIR"
 cp "$WORK_DIR/user.pfx" "$OUTPUT_DIR/user.pfx"
 
-cat > Volumes/nodesfile.json << 'EOF'
+cat > $OUTPUT_DIR/nodesfile.json << 'EOF'
 {
   "Folder": "WritableNodes",
   "NodeList": [

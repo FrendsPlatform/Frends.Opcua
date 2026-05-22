@@ -25,6 +25,7 @@ public class Connection
     /// <example>4080</example>
     [DefaultValue(4080)]
     [Required]
+    [Range(1, 65535)]
     public int Port { get; set; } = 4080;
 
     /// <summary>
@@ -99,6 +100,7 @@ public class Connection
     /// </summary>
     /// <example>10</example>
     [DefaultValue(10)]
+    [Range(1, int.MaxValue)]
     public int ConnectionTimeout { get; set; } = 10;
 
     /// <summary>
@@ -106,6 +108,7 @@ public class Connection
     /// </summary>
     /// <example>60</example>
     [DefaultValue(60)]
+    [Range(1, int.MaxValue)]
     public int SessionTimeout { get; set; } = 60;
 
     /// <summary>

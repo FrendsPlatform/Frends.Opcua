@@ -32,9 +32,14 @@ internal class ValidJsonArrayAttribute(params string[] requiredFields) : Validat
 
         foreach (var token in parsed)
         {
+            if (token.Type != JTokenType.Object)
+                return new ValidationResult($"{validationContext.DisplayName}: each entry must be a JSON object. Offending entry: {token}");
+
+            var obj = (JObject)token;
+
             foreach (var field in requiredFields)
             {
-                if (token[field] == null)
+                if (obj[field] == null)
                     return new ValidationResult($"{validationContext.DisplayName}: each entry must have a '{field}' field. Offending entry: {token}");
             }
         }

@@ -23,9 +23,14 @@ internal sealed class OpcUaSession : IAsyncDisposable
     /// <returns>A completed once the session has been closed and disposed.</returns>
     public async ValueTask DisposeAsync()
     {
-        if (Session.Connected)
-            await Session.CloseAsync().ConfigureAwait(false);
-
-        Session.Dispose();
+        try
+        {
+            if (Session.Connected)
+                await Session.CloseAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            Session.Dispose();
+        }
     }
 }

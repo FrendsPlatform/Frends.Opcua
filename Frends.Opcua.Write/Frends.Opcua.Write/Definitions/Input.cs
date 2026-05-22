@@ -28,8 +28,8 @@ public class Input
     /// JSON array of nodes to write. Notice that the schema of JSON needs to be exact as the example.
     /// </summary>
     /// <example>[{"NodeId": "ns=2;s=MyDevice.Temperature", "Value": 72.5}]</example>
-    [UIHint(nameof(InputType), "", InputType.JSON)]
-    [RequiredIf(nameof(InputType), InputType.JSON)]
+    [UIHint(nameof(InputType), "", InputType.Json)]
+    [RequiredIf(nameof(InputType), InputType.Json)]
     [ValidJsonArray("NodeId", "Value")]
     [DisplayFormat(DataFormatString = "Text")]
     public string WriteNodesJson { get; set; }

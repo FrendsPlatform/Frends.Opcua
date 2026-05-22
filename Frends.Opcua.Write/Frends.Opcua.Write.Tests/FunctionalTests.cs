@@ -140,6 +140,7 @@ internal class FunctionalTests
         options.ThrowErrorOnFailure = false;
 
         var result = await Opcua.Write(input, connectionUsernamePassword, options, default);
+        Assert.That(result.Success, Is.False);
         Assert.That(result.Error.Message, Does.Contain("Access was denied for the provided credentials."));
     }
 

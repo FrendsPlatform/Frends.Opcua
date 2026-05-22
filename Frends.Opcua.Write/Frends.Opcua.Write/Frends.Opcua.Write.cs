@@ -45,7 +45,7 @@ public static class Opcua
 
             WriteNode[] writeNodes;
 
-            if (input.InputType is Enums.InputType.JSON)
+            if (input.InputType is Enums.InputType.Json)
             {
                 writeNodes = JArray.Parse(input.WriteNodesJson)
                     .Select(token => new WriteNode
@@ -160,7 +160,7 @@ public static class Opcua
             StatusCodes.BadNotReadable => "The node value is not readable.",
             StatusCodes.BadUserAccessDenied => "Access to the node was denied.",
             StatusCodes.BadWaitingForInitialData => "The server has not received initial data yet.",
-            _ => $"OPC UA node read failed with status: {statusCode}",
+            _ => $"OPC UA node write failed with status: {statusCode}",
         };
     }
 }

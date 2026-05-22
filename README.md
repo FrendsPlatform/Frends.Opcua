@@ -5,6 +5,7 @@ Frends Task for OPCUA related operations.
 # Tasks
 
 - [Frends.Opcua.Read](Frends.Opcua.Read/README.md)
+- [Frends.Opcua.Write](Frends.Opcua.Write/README.md)
 
 # Contributing
 

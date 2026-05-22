@@ -179,7 +179,7 @@ internal static class SessionFactory
             throw new ArgumentException("PrivateKeyPath is required when using a DER/CRT certificate.");
 
         var cert = new X509Certificate2(connection.CertificatePath);
-        var privateKey = RSA.Create();
+        using var privateKey = RSA.Create();
         privateKey.ImportFromPem(File.ReadAllText(connection.PrivateKeyPath));
         return cert.CopyWithPrivateKey(privateKey);
     }

@@ -100,7 +100,7 @@ public class Connection
     /// </summary>
     /// <example>10</example>
     [DefaultValue(10)]
-    [Range(1, int.MaxValue)]
+    [Range(1, int.MaxValue / 1000)]
     public int ConnectionTimeout { get; set; } = 10;
 
     /// <summary>
@@ -108,7 +108,7 @@ public class Connection
     /// </summary>
     /// <example>60</example>
     [DefaultValue(60)]
-    [Range(1, int.MaxValue)]
+    [Range(1, int.MaxValue / 1000)]
     public int SessionTimeout { get; set; } = 60;
 
     /// <summary>

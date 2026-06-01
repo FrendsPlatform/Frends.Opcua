@@ -1,16 +1,13 @@
-﻿using Frends.Opcua.Write.Definitions;
-using Frends.Opcua.Write.Enums;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Frends.Opcua.Write.Definitions;
 using Frends.Opcua.Write.Helpers;
 using Newtonsoft.Json.Linq;
 using Opc.Ua;
 using Opc.Ua.Client;
-using System;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Frends.Opcua.Write;
 

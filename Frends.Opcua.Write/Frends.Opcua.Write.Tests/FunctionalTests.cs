@@ -65,7 +65,7 @@ internal class FunctionalTests
             SecurityPolicy = OpcSecurityPolicy.Basic256Sha256,
             CertificatePassword = "yourpassword",
             CertificatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../Volumes/user.pfx"),
-            PrivateKeyPath = string.Empty, // Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../Volumes/trusted-user/certs/user.key"),
+            PrivateKeyPath = string.Empty,
         };
 
         options = new Options
@@ -78,13 +78,7 @@ internal class FunctionalTests
         input = new Input
         {
             InputType = InputType.WriteNodes,
-            WriteNodes = new WriteNode[]
-            {
-                  new WriteNode() { NodeId = "ns=3;s=WriteTest_Int32",  Value = RandomNumberGenerator.GetInt32(1000), },
-                  new WriteNode() { NodeId = "ns=3;s=WriteTest_Double", Value = new Random().NextDouble(), },
-                  new WriteNode() { NodeId = "ns=3;s=WriteTest_Bool",   Value = new Random().Next() > (int.MaxValue / 2), },
-                  new WriteNode() { NodeId = "ns=3;s=WriteTest_String", Value = Guid.NewGuid().ToString("n")[8..], },
-            },
+            WriteNodes = BuildAllTypeNodes(),
         };
     }
 
@@ -92,17 +86,11 @@ internal class FunctionalTests
     public async Task Opcua_WriteWithAnonymousAccess()
     {
         var result = await Opcua.Write(input, connectionAnonymous, options, default);
-        Assert.That(result.Success, Is.True);
+        AssertAllNodesGood(result);
 
-        Assert.That(result.Nodes, Is.Not.Empty);
-        Assert.That(((JToken)result.Nodes).All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", ((JToken)result.Nodes).Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
         connectionAnonymous.Path = "opcplc-anonymous";
-
         result = await Opcua.Write(input, connectionAnonymous, options, default);
-        Assert.That(result.Success, Is.True);
-
-        Assert.That(result.Nodes, Is.Not.Empty);
-        Assert.That(((JToken)result.Nodes).All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", ((JToken)result.Nodes).Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+        AssertAllNodesGood(result);
     }
 
     [Test]
@@ -111,25 +99,18 @@ internal class FunctionalTests
         connectionAnonymous.ServerName = "127.0.0.1";
 
         var result = await Opcua.Write(input, connectionAnonymous, options, default);
-        Assert.That(result.Success, Is.True);
-
-        Assert.That(result.Nodes, Is.Not.Empty);
-        Assert.That(((JToken)result.Nodes).All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", ((JToken)result.Nodes).Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+        AssertAllNodesGood(result);
 
         connectionAnonymous.Path = "opcplc-anonymous";
-
         result = await Opcua.Write(input, connectionAnonymous, options, default);
-        Assert.That(result.Success, Is.True);
-
-        Assert.That(result.Nodes, Is.Not.Empty);
-        Assert.That(((JToken)result.Nodes).All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", ((JToken)result.Nodes).Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+        AssertAllNodesGood(result);
     }
 
     [Test]
     public async Task Opcua_WriteWithUsernamePasswordAccess()
     {
         var result = await Opcua.Write(input, connectionUsernamePassword, options, default);
-        Assert.That(result.Success, Is.True);
+        AssertAllNodesGood(result);
     }
 
     [Test]
@@ -148,10 +129,7 @@ internal class FunctionalTests
     public async Task Opcua_WriteWithCertificateAccess()
     {
         var result = await Opcua.Write(input, connectionSecure, options, default);
-        Assert.That(result.Success, Is.True);
-
-        Assert.That(result.Nodes, Is.Not.Empty);
-        Assert.That(((JToken)result.Nodes).All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", ((JToken)result.Nodes).Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]}"))}");
+        AssertAllNodesGood(result);
     }
 
     [Test]
@@ -174,5 +152,36 @@ internal class FunctionalTests
 
         var ex = Assert.ThrowsAsync<Exception>(act);
         Assert.That(ex!.Message, Does.Contain("CertificatePath is required."));
+    }
+
+    private static WriteNode[] BuildAllTypeNodes()
+    {
+        var rng = new Random();
+        return new WriteNode[]
+        {
+            new() { NodeId = "ns=3;s=WriteTest_Boolean",    Value = rng.Next() > (int.MaxValue / 2) },
+            new() { NodeId = "ns=3;s=WriteTest_SByte",      Value = (sbyte)rng.Next(-128, 127) },
+            new() { NodeId = "ns=3;s=WriteTest_Byte",       Value = (byte)rng.Next(0, 255) },
+            new() { NodeId = "ns=3;s=WriteTest_Int16",      Value = (short)rng.Next(-32768, 32767) },
+            new() { NodeId = "ns=3;s=WriteTest_UInt16",     Value = (ushort)rng.Next(0, 65535) },
+            new() { NodeId = "ns=3;s=WriteTest_Int32",      Value = RandomNumberGenerator.GetInt32(1000) },
+            new() { NodeId = "ns=3;s=WriteTest_UInt32",     Value = (uint)RandomNumberGenerator.GetInt32(1000) },
+            new() { NodeId = "ns=3;s=WriteTest_Int64",      Value = (long)RandomNumberGenerator.GetInt32(1000) },
+            new() { NodeId = "ns=3;s=WriteTest_UInt64",     Value = (ulong)RandomNumberGenerator.GetInt32(1000) },
+            new() { NodeId = "ns=3;s=WriteTest_Float",      Value = (float)rng.NextDouble() },
+            new() { NodeId = "ns=3;s=WriteTest_Double",     Value = rng.NextDouble() },
+            new() { NodeId = "ns=3;s=WriteTest_String",     Value = Guid.NewGuid().ToString("n")[..8] },
+            new() { NodeId = "ns=3;s=WriteTest_DateTime",   Value = DateTime.UtcNow },
+            new() { NodeId = "ns=3;s=WriteTest_Guid",       Value = Guid.NewGuid() },
+            new() { NodeId = "ns=3;s=WriteTest_ByteString", Value = RandomNumberGenerator.GetBytes(16) },
+        };
+    }
+
+    private static void AssertAllNodesGood(Result result)
+    {
+        Assert.That(result.Success, Is.True);
+        Assert.That(result.Nodes, Is.Not.Empty);
+        Assert.That(
+            ((JToken)result.Nodes).All(node => (string)node["StatusCode"] == "Good"), $"Some nodes did not return Good status: {string.Join(", ", ((JToken)result.Nodes).Where(node => (string)node["StatusCode"] != "Good").Select(node => $"{node["NodeId"]} = {node["StatusCode"]} ({node["Error"]})"))}");
     }
 }

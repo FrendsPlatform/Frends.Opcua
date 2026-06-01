@@ -117,9 +117,63 @@ cat > $OUTPUT_DIR/nodesfile.json << 'EOF'
   "Folder": "WritableNodes",
   "NodeList": [
     {
+      "NodeId": "WriteTest_Boolean",
+      "Name": "WriteTest_Boolean",
+      "DataType": "Boolean",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_SByte",
+      "Name": "WriteTest_SByte",
+      "DataType": "SByte",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_Byte",
+      "Name": "WriteTest_Byte",
+      "DataType": "Byte",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_Int16",
+      "Name": "WriteTest_Int16",
+      "DataType": "Int16",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_UInt16",
+      "Name": "WriteTest_UInt16",
+      "DataType": "UInt16",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
       "NodeId": "WriteTest_Int32",
       "Name": "WriteTest_Int32",
       "DataType": "Int32",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_UInt32",
+      "Name": "WriteTest_UInt32",
+      "DataType": "UInt32",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_Int64",
+      "Name": "WriteTest_Int64",
+      "DataType": "Int64",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_UInt64",
+      "Name": "WriteTest_UInt64",
+      "DataType": "UInt64",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_Float",
+      "Name": "WriteTest_Float",
+      "DataType": "Float",
       "AccessLevel": "CurrentReadOrWrite"
     },
     {
@@ -129,15 +183,27 @@ cat > $OUTPUT_DIR/nodesfile.json << 'EOF'
       "AccessLevel": "CurrentReadOrWrite"
     },
     {
-      "NodeId": "WriteTest_Bool",
-      "Name": "WriteTest_Bool",
-      "DataType": "Boolean",
-      "AccessLevel": "CurrentReadOrWrite"
-    },
-    {
       "NodeId": "WriteTest_String",
       "Name": "WriteTest_String",
       "DataType": "String",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_DateTime",
+      "Name": "WriteTest_DateTime",
+      "DataType": "DateTime",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_Guid",
+      "Name": "WriteTest_Guid",
+      "DataType": "Guid",
+      "AccessLevel": "CurrentReadOrWrite"
+    },
+    {
+      "NodeId": "WriteTest_ByteString",
+      "Name": "WriteTest_ByteString",
+      "DataType": "ByteString",
       "AccessLevel": "CurrentReadOrWrite"
     }
   ]

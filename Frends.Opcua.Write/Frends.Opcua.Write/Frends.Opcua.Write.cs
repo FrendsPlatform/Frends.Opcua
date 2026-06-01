@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Frends.Opcua.Write.Definitions;
+using Frends.Opcua.Write.Enums;
 using Frends.Opcua.Write.Helpers;
 using Newtonsoft.Json.Linq;
 using Opc.Ua;
@@ -80,24 +82,38 @@ public static class Opcua
 
     private static JArray WriteNodes(Session session, WriteNode[] nodes)
     {
-        // Build the list of nodes to read
+        // Read DataType attributes for all nodes first
+        var nodesToReadTypes = new ReadValueIdCollection(
+            nodes.Select(n => new ReadValueId
+            {
+                NodeId = NodeId.Parse(n.NodeId),
+                AttributeId = Opc.Ua.Attributes.DataType,
+            }));
+
+        session.Read(null, 0, TimestampsToReturn.Neither, nodesToReadTypes, out DataValueCollection typeResults, out DiagnosticInfoCollection _);
+
+        // Build the list of nodes to write
         var nodesToWrite = new WriteValueCollection();
-        foreach (var node in nodes)
+
+        for (var i = 0; i < nodes.Length; i++)
         {
+            var dataTypeId = typeResults[i].Value as NodeId;
+            var coercedValue = CoerceValue(nodes[i].Value, dataTypeId);
+
             nodesToWrite.Add(new WriteValue
             {
-                NodeId = NodeId.Parse(node.NodeId),
+                NodeId = NodeId.Parse(nodes[i].NodeId),
                 AttributeId = Opc.Ua.Attributes.Value,
                 Value = new DataValue
                 {
-                    Value = node.Value,
+                    Value = coercedValue,
                     StatusCode = StatusCodes.Good,
                     SourceTimestamp = DateTime.UtcNow,
                 },
             });
         }
 
-        // Perform the read
+        // Perform the write
         session.Write(
             requestHeader: null,
             nodesToWrite: nodesToWrite,
@@ -160,7 +176,42 @@ public static class Opcua
             StatusCodes.BadNotReadable => "The node value is not readable.",
             StatusCodes.BadUserAccessDenied => "Access to the node was denied.",
             StatusCodes.BadWaitingForInitialData => "The server has not received initial data yet.",
+            StatusCodes.BadNotWritable => "The node is not writable.",
             _ => $"OPC UA node write failed with status: {statusCode}",
         };
+    }
+
+    private static object CoerceValue(object value, NodeId dataTypeId)
+    {
+        if (value == null || dataTypeId == null)
+            return value;
+
+        // Convert to long first as a common intermediate from JSON deserialization
+        try
+        {
+            var builtInType = TypeInfo.GetBuiltInType(dataTypeId);
+            return builtInType switch
+            {
+                BuiltInType.Boolean => Convert.ToBoolean(value),
+                BuiltInType.SByte => Convert.ToSByte(value),
+                BuiltInType.Byte => Convert.ToByte(value),
+                BuiltInType.Int16 => Convert.ToInt16(value),
+                BuiltInType.UInt16 => Convert.ToUInt16(value),
+                BuiltInType.Int32 => Convert.ToInt32(value),
+                BuiltInType.UInt32 => Convert.ToUInt32(value),
+                BuiltInType.Int64 => Convert.ToInt64(value),
+                BuiltInType.UInt64 => Convert.ToUInt64(value),
+                BuiltInType.Float => Convert.ToSingle(value),
+                BuiltInType.Double => Convert.ToDouble(value),
+                BuiltInType.String => Convert.ToString(value),
+                BuiltInType.DateTime => Convert.ToDateTime(value),
+                _ => value, // Pass through for complex types
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                $"Failed to coerce value '{value}' ({value.GetType().Name}) to OPC UA type '{dataTypeId}': {ex.Message}", ex);
+        }
     }
 }

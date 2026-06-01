@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Frends.Opcua.Write.Enums;
 
 namespace Frends.Opcua.Write.Definitions;
 

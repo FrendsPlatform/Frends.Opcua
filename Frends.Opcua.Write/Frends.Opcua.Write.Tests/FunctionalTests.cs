@@ -147,10 +147,6 @@ internal class FunctionalTests
     [Test]
     public async Task Opcua_WriteWithCertificateAccess()
     {
-        Console.WriteLine($"Volumes dir: {connectionSecure.CertificatePath}");
-        Console.WriteLine($"Absolute path: {Path.GetFullPath(connectionSecure.CertificatePath)}");
-        Console.WriteLine($"Volumes exists: {Directory.Exists(connectionSecure.CertificatePath)}");
-
         var result = await Opcua.Write(input, connectionSecure, options, default);
         Assert.That(result.Success, Is.True);
 
